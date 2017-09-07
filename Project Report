@@ -1,0 +1,74 @@
+When approaching this problem, at first I considered creating a graph based on the input file, where each vertex was representative
+of the location in space. However, this implementation created various problems for then creating a path that the two robots used,
+so I switched my approach.
+
+Currently, the approach used is as follows:
+    
+Function: int** parseInputFile(char *file, int *startx1Ptr, int *starty1Prt, int *startx2Ptr, int *starty2Ptr, int *endx1Ptr,int *endy1Ptr, int *endyx2Ptr, int *endy2Ptr, int *xmax, int *ymax );
+Complexity = O(n) where n is the number of characters in the file.
+Description:The input file is parsed into a 2D integer array that represents the layout of the room. The spots which are obstacles were set to
+    int[][] = 0, open spaces were set to 1, and the x,y coordinates of the first and second robot start and end points are all saved
+    to be used later. 
+
+    
+
+    After the file is parsed, I create a graph, represented by a 4D array, where the indexes of the array refer to coordinates of the
+    two robots current position. For example, if robot1 was at (2, 1) and robot 2 was at (4, 2) then the corresponding graph vertex is
+    (2, 1, 4, 2). 
+    Complexity = O(N) where N is the number of possible vertices in the graph.
+
+ 
+    Next, I set all graph vertices as unvisited, and then set their allowed value, based on the return of the allowed function.
+    The allowed function checks whether the sent vertex is possible for the two robots, based on the distance parameter and the
+    obstacles inside the maze. 
+
+    Complexity of loop: O(N), N is number of vertices in graph
+    Complexity of isAllowed = O(1), Allowed calculates in constant time.
+    Complexity of whole thing: O(N * 1) = O(N)
+        Code below:
+                    
+                        for(a = 0; a < *xSize; a++){
+                            for(b = 0; b < *ySize; b++){
+                                for(c = 0; c < *xSize; c++){
+                                    for(d = 0; d < *ySize; d++){
+                                        graph[a][b][c][d].visited = 0;
+                                        index temp;
+                                        temp.x1 = a;
+                                        temp.y1 = b;
+                                        temp.x2 = c;
+                                        temp.y2 = d;
+                                        graph[a][b][c][d].allowed = isAllowed(floorplan,temp ,r);
+                                    }    
+                                }
+                            }
+                        }
+
+
+
+
+Function: int DFS_Iterative(vertex**** graph, index start, index end, int xmax, int ymax);
+complexity = O(V + E) where V is the number of vertices in the graph that can be visited and E is the number of edges.
+Description:Once these values are initialized, I performed a DFS. Originally, I tried to use a recursive call to the DFS, which is present in 
+    project, however, this created too many recursive calls for my stack to handle and did not complete successfully. Next, I created 
+    an iterative search. Inside the search, at each new vertex, possible moves from this position were calculated, and those which
+    were allowed moves had their vertices sent to the stack to be searched later(if they were not visited already). When the search
+    finds the End index, it returns 1. If the end index is not found, it returns 0. As new vertices are added to the stack, if they
+    are not visited, the predecessor vertex is assigned. This creates a traceable path going backward from the end point to allow
+    the path to be outputted.
+
+
+
+Function: index* get_path(vertex**** graph, index end, index start, int*);
+complexity = O(N) where N is the number of vertices in the path from start to end.
+Description:Next, I took the ending vertex, and if it was found, I used a function that created an array of indexes, which in reverse order 
+    is the path from the starting vertex to the ending vertex. This index array is returned.
+
+
+Function: void edit_floorplan(int **floorplan, index *path, int, index, index,int, int);
+Description:Using the index arary, I used a function that prints the current location of the two robots after each new move that is made
+    (meaning all spots that the robot had already visited are not printed a second tiem, rather just the newest move that is made
+    from these visited vertices as the robot backtraces).
+
+
+I created this project by myself and all contributions made are from me or from code presented in class or code presented
+by Professor Chadha.
